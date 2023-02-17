@@ -47,9 +47,11 @@ io.on("connection", (socket) => {
             db.promise().query(`UPDATE users SET nickname = '${nickname}' WHERE id = '${id}'`);
             const [last_chat_id] = await db.promise().query(`SELECT last_chat_id FROM users WHERE id = '${id}'`);
             socket["last_chat_id"] = last_chat_id[0].last_chat_id;
+            const [last_chat] = await db.promise().query(`SELECT id FROM chats ORDER BY id DESC LIMIT 1`);
             users.forEach(x => {
                 if (x.id == id) x.status = 'connect'
             });
+            socket.emit("not_read", last_chat[0].id - socket.last_chat_id);
         }
         io.in("room").emit("new_entry", nickname, users);
         console.log(users);
