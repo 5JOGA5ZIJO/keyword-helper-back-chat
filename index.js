@@ -45,4 +45,4 @@ io.on("connection", (socket) => {
 });
 
 const handleListen = () => console.log(`Listening on http://localhost:3001`);
-httpServer.listen(3001, handleListen);
+httpServer.listen(process.env.PORT || '3001', handleListen);

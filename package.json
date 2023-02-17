@@ -13,6 +13,9 @@
   },
   "author": "kim2ju",
   "license": "ISC",
+  "engines": {
+    "node": "16.13.1"
+  },
   "bugs": {
     "url": "https://github.com/5JOGA5ZIJO/keyword-helper-back-chat/issues"
   },
