@@ -16,7 +16,7 @@ const io = new Server(httpServer, {
 let users;
 
 const setting = async() => {
-    [users] = await db.promise().query(`SELECT id FROM users`);
+    [users] = await db.promise().query(`SELECT id, nickname FROM users`);
     users.forEach(x=> {
         x.status = 'leave'
     });
@@ -42,14 +42,17 @@ io.on("connection", (socket) => {
         if (user.length == 0) {
             db.promise().query(`INSERT INTO users (id, nickname) VALUES ('${id}', '${nickname}')`);
             db.promise().query(`INSERT INTO chats (user_id, chat) VALUES ('system', '${nickname}님이 입장하였습니다.')`);
-            users.push({"id": id, "status": 'connect'})
+            users.push({"id": id, "nickname": nickname, "status": 'connect'})
         } else {
             db.promise().query(`UPDATE users SET nickname = '${nickname}' WHERE id = '${id}'`);
             const [last_chat_id] = await db.promise().query(`SELECT last_chat_id FROM users WHERE id = '${id}'`);
             socket["last_chat_id"] = last_chat_id[0].last_chat_id;
             const [last_chat] = await db.promise().query(`SELECT id FROM chats ORDER BY id DESC LIMIT 1`);
             users.forEach(x => {
-                if (x.id == id) x.status = 'connect'
+                if (x.id == id) {
+                    x.nickname = nickname
+                    x.status = 'connect'
+                }
             });
             socket.emit("not_read", last_chat[0].id - socket.last_chat_id);
         }
