@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("new_message", (message) => {
-        io.in("room").emit("new_message", new Date(), `'${socket.nickname}'`, `'${message}'`);
+        io.in("room").emit("new_message", new Date(), `${socket.nickname}`, `${message}`);
         console.log(`'${socket.nickname}': '${message}'`);
         db.promise().query(`INSERT INTO chats (user_id, chat) VALUES ('${socket.db_id}', '${message}')`);
     });
