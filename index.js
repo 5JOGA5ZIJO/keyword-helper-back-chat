@@ -13,8 +13,7 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-    socket.on("enter", async (id, nickname) => {
-        socket["db_id"] = id;
+    socket.on("enter", async (nickname) => {
         socket["nickname"] = nickname;
         socket["last_chat_id"] = 0;
         socket.join("room");
@@ -33,14 +32,14 @@ io.on("connection", (socket) => {
     socket.on("new_message", (message) => {
         io.in("room").emit("new_message", `'${socket.nickname}': '${message}'`);
         console.log(`'${socket.nickname}': '${message}'`);
-        db.promise().query(`INSERT INTO chats (user_id, chat) VALUES ('${socket.db_id}', '${message}')`);
+        db.promise().query(`INSERT INTO chats (user_id, chat) VALUES ('${socket.id}', '${message}')`);
     });
 
     socket.on("disconnecting", async () => {
         socket.to("room").emit("new_leave", socket.nickname);
         const [last_chat] = await db.promise().query(`SELECT id FROM chats ORDER BY id DESC LIMIT 1`);
         socket["last_chat_id"] = last_chat[0].id;
-        db.promise().query(`UPDATE users SET last_chat_id = '${socket.last_chat_id}' WHERE id = '${socket.db_id}'`);
+        db.promise().query(`UPDATE users SET last_chat_id = '${socket.last_chat_id}' WHERE id = '${socket.id}'`);
     });
   
 });
