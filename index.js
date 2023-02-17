@@ -34,7 +34,7 @@ io.on("connection", (socket) => {
             SELECT users.nickname AS 'nickname', chats.chat AS 'chat', chats.created_at AS 'created_at' 
             FROM chats
             LEFT JOIN users ON chats.user_id = users.id
-            ORDER BY created_at DESC
+            ORDER BY created_at
         `);
         socket.emit("prev_message", chats)
 
