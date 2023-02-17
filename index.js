@@ -20,13 +20,13 @@ io.on("connection", (socket) => {
         socket.join("room");
         io.in("room").emit("new_entry", nickname);
 
-        const [user] = await db.promise().query(`SELECT * FROM users WHERE id = '${id}'`);
+        const [user] = await db.promise().query(`SELECT * FROM users WHERE id = '${socket.id}'`);
         if (user.length == 0) {
-            db.promise().query(`INSERT INTO users (id, nickname) VALUES ('${id}', '${nickname}')`);
+            db.promise().query(`INSERT INTO users (id, nickname) VALUES ('${socket.id}', '${nickname}')`);
             db.promise().query(`INSERT INTO chats (user_id, chat) VALUES ('system', '${nickname} enter')`);
         } else {
-            db.promise().query(`UPDATE users SET nickname = '${nickname}' WHERE id = '${id}'`);
-            db.promise().query(`SELECT last_chat_id FROM users WHERE id = '${id}'`);
+            db.promise().query(`UPDATE users SET nickname = '${nickname}' WHERE id = '${socket.id}'`);
+            db.promise().query(`SELECT last_chat_id FROM users WHERE id = '${socket.id}'`);
         }
     });
 
